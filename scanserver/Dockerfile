@@ -1,17 +1,9 @@
-FROM amd64/python:2
+FROM python:alpine
 ADD . /code
 WORKDIR /code
-RUN apt-get update && apt-get install -y bluetooth bluez \
-libbluetooth-dev \
-libudev-dev \
-libperl-dev \
-libglib2.0-dev
-RUN pip2 install -r requirements.txt
-WORKDIR /usr/local/lib/python2.7/site-packages/bluepy
-RUN make
-WORKDIR /code
-RUN chmod +x run.sh
+RUN apk add --no-cache \
+bluez-libs eudev-libs glib-dev \
+&& apk add --no-cache gcc g++ musl-dev cmake make linux-headers
+RUN pip install -r requirements.txt
+dockerRUN chmod +x run.sh
 CMD ["/code/run.sh"]
-
-
-
