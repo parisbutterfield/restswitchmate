@@ -1,4 +1,5 @@
 FROM alpine:3.6
+RUN mkdir /db
 ADD . /code
 WORKDIR /code
 RUN apk add --no-cache \

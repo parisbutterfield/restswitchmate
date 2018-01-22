@@ -27,7 +27,7 @@ class ScanDelegate(DefaultDelegate):
     def __init__(self):
         DefaultDelegate.__init__(self)
         self.seen = []
-        self.con = lite.connect('switchmate.db')
+        self.con = lite.connect('/db/switchmate.db')
 
     @staticmethod
     def convertMac(macaddress):
@@ -93,10 +93,10 @@ def myfunc(col):
     return val
 
 
-con = lite.connect('switchmate.db', detect_types=lite.PARSE_DECLTYPES)
+con = lite.connect('/db/switchmate.db', detect_types=lite.PARSE_DECLTYPES)
 lite.register_converter('boolean', myfunc)
 cur = con.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS Switchmate (macaddress TEXT PRIMARY KEY, status boolean, updated INT)")
 BackgroundThread()
-print('Switchmate Scan Running')
 FlaskThread()
+print('Switchmate Scan Running')

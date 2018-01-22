@@ -1,0 +1,11 @@
+FROM alpine:3.6
+RUN mkdir /db
+ADD . /code
+WORKDIR /code
+RUN apk add --no-cache \
+bluez-libs eudev-libs glib-dev python py-pip python-dev\
+&& apk add --no-cache gcc musl-dev cmake make
+RUN pip install -r requirements.txt
+RUN apk del cmake make
+RUN chmod +x run.sh
+CMD ["/code/run.sh"]

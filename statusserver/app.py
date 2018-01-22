@@ -1,12 +1,14 @@
 import sqlite3 as lite
 import json
 from flask import Flask, g, abort
+from flask_cors import CORS
 
 
 class FlaskAppWrapper(object):
-    DATABASE = 'switchmate.db'
+    DATABASE = '/db/switchmate.db'
 
     app = Flask(__name__)
+    CORS(app)
 
     def __init__(self):
         app = Flask(__name__)

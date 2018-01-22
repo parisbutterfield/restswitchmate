@@ -1,0 +1,30 @@
+version: '3'
+services:
+  statusserver:
+    build: statusserver
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./db:/db
+      - /dev/bus/usb:/dev/bus/usb
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    cap_add:
+      - SYS_ADMIN
+    network_mode: "host"
+    environment:
+      - SCAN_HCI=0
+    privileged: true
+  authserver:
+    build: ./authserver
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./db:/db
+      - /dev/bus/usb:/dev/bus/usb
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    cap_add:
+      - SYS_ADMIN
+    network_mode: "host"
+    environment:
+      - SCAN_HCI=1
+    privileged: true

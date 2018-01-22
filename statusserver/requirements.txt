@@ -1,4 +1,4 @@
 flask
 netaddr
 bluepy
-
+flask-cors
