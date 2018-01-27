@@ -13,6 +13,7 @@ services:
     network_mode: "host"
     environment:
       - SCAN_HCI=0
+      - PYTHONUNBUFFERED=1
     privileged: true
   authserver:
     build: ./authserver
@@ -27,4 +28,20 @@ services:
     network_mode: "host"
     environment:
       - SCAN_HCI=1
+      - PYTHONUNBUFFERED=1
+    privileged: true
+  switchserver:
+    build: ./switchserver
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./db:/db
+      - /dev/bus/usb:/dev/bus/usb
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    cap_add:
+      - SYS_ADMIN
+    network_mode: "host"
+    environment:
+      - SCAN_HCI=1
+      - PYTHONUNBUFFERED=1
     privileged: true

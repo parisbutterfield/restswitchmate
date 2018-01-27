@@ -57,7 +57,7 @@ def disconnect():
     count -= 1
 
 
-con = lite.connect('../db/switchmate.db')
+con = lite.connect('/db/switchmate.db')
 cur = con.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS Auth (macaddress TEXT PRIMARY KEY, authkey TEXT, updated INT)")
 socketio.run(fapp, '0.0.0.0', port=5001, debug=True)

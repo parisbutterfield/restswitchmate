@@ -46,7 +46,7 @@ class NotificationDelegate(DefaultDelegate):
               sql = ''' INSERT OR REPLACE INTO Auth(macaddress, authkey, updated) 
               				      VALUES (?, ?, ?) '''
               data = (self.convertMac(self.macaddress), key, datetime.datetime.now())
-              print('inserting data: ', data)
+              print('Updating: ', data)
               cur = self.con.cursor()
               cur.execute(sql, data)
               self.con.commit()
