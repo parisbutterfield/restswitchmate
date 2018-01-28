@@ -1,6 +1,6 @@
 import Queue
 from flask_socketio import SocketIO, emit
-from flask import Flask, g, abort
+from flask import Flask, g, abort, render_template
 from queue import statusqueue, authqueue
 import sqlite3 as lite
 
@@ -31,6 +31,11 @@ def background_auth_thread():
 
 fapp = Flask(__name__)
 socketio = SocketIO(fapp)
+
+@fapp.route("/auth")
+def index():
+    return render_template('index.html')
+
 
 @socketio.on('auth')
 def handle_auth(macaddress):

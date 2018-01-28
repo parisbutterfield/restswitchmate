@@ -12,16 +12,12 @@ return function (o){
     }
 }());
 
-function process(macaddress) {
-console.log(macaddress);
-}
-
 
 
 $( document ).ready(function() {
 
 
-var socket = io('http://10.0.1.29:5001');
+var socket = io("http://" + location.hostname + ":5001");
 
   var tbody = $('#myTable').children('tbody');
   var table = tbody.length ? tbody : $('#myTable');

@@ -1,6 +1,6 @@
 import sqlite3 as lite
 import json
-from flask import Flask, g, abort
+from flask import Flask, g, abort, render_template
 from flask_cors import CORS
 
 
@@ -63,3 +63,7 @@ class FlaskAppWrapper(object):
         if results != None:
             return json.dumps(results)
         abort(404)
+
+    @app.route("/status")
+    def index():
+        return render_template('index.html')

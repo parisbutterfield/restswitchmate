@@ -7,7 +7,10 @@ return function (o){
     }
 }());
 
+function process (macaddress) {
+window.open('http://' + location.hostname + ':5001/auth?macaddress=' + macaddress , '_blank')
 
+}
 
 
 $( document ).ready(function() {
@@ -22,7 +25,7 @@ $( document ).ready(function() {
        '<td> <button onclick=process(\'{{macaddress}}\')> Authenticate </button> </td>'+
   '</tr>';
 
-  $.get( "http://' + location.hostname + ':5000/devices", function( data ) {
+  $.get( "http://" + location.hostname + ":5000/devices", function( data ) {
   $.each( JSON.parse(data), function( i, val){
 
       table.append(row.compose({
