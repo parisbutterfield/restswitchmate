@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Authenticate</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.js"> </script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+  <script src="auth.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h3>Before you can use your Switchmate, you'll need to Authenticate.</h3>
+  <h3 style="display:inline">Please be ready to press the button on your device. </h3>
+  <button id="authbutton" style="display:inline;top:-5px;position: relative;">Start</button>
+  <table class="table table-striped" id="myTable" style="margin-top: 50px;">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th> <i class="fa fa-spinner fa-spin" style="font-size:24px"></i> </th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
