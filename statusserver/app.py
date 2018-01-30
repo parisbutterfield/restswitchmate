@@ -1,6 +1,8 @@
 import sqlite3 as lite
 import json
-from flask import Flask, g, abort, render_template
+import requests
+from urlparse import urlparse
+from flask import Flask, g, abort, render_template, request
 from flask_cors import CORS
 
 
@@ -48,13 +50,21 @@ class FlaskAppWrapper(object):
         results = FlaskAppWrapper.query_db('select * from Switchmate')
         return json.dumps(results)
 
-    @app.route('/device/<macaddress>')
+    @app.route('/device/<macaddress>' , methods=['GET'])
     def device(macaddress):
         results = FlaskAppWrapper.query_db('select * from Switchmate where macaddress = ?', (macaddress.upper(),),
                                            one=True)
         if results != None:
             return json.dumps(results)
         abort(404)
+
+    @app.route('/device/<macaddress>' , methods=['PUT'])
+    def devicee(macaddress):
+        hostname = urlparse(request.host_url).hostname
+        content = request.get_json(force=True)
+        r = requests.put("http://" + hostname + ":5002/device/" + macaddress, data = json.dumps(content) )
+        return r.content
+
 
     @app.route('/device/<macaddress>/status')
     def devicestatus(macaddress):
