@@ -1,0 +1,12 @@
+image: parisbutterfield/restswitch:statusserver
+manifests:
+  -
+    image: parisbutterfield/restswitch:statusserverarm
+    platform:
+      architecture: arm
+      os: linux
+  -
+    image: parisbutterfield/restswitch:statusserveramd64
+    platform:
+      architecture: amd64
+      os: linux
