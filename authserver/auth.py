@@ -20,7 +20,7 @@ AUTH_NOTIFY_HANDLE = 0x0017
 AUTH_HANDLE = 0x0016
 AUTH_INIT_VALUE = struct.pack('<BBBBBB', 0x00, 0x00, 0x00, 0x00, 0x01, 0x00)
 
-DATABASE = '../db/switchmate.db'
+DATABASE = '/db/switchmate.db'
 
 
 
