@@ -5,7 +5,7 @@ from flask_cors import CORS
 from queue import switchqueue
 
 class FlaskAppWrapper(object):
-    DATABASE = '../db/switchmate.db'
+    DATABASE = '/db/switchmate.db'
 
     app = Flask(__name__)
     CORS(app)
