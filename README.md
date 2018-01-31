@@ -1,5 +1,9 @@
 # restswitchmate 
-Allows users to control Switchmate devices via REST. The supported device for this project is a Raspberry Pi Zero W. Docker containers run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. Containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running firmware 2.99.9 or lower. Hopefully additional firmwares will be added in the future.
+Allows users to control Switchmate devices via REST. 
+
+The supported device for this project is a Raspberry Pi Zero W. Three bluetooth radios are required for each service. The Pi Zero W has bluetooth built in and two USB Bluetooth adapters are added. 
+
+Docker containers run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. Containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running firmware 2.99.9 or lower. Hopefully additional firmwares will be added in the future.
 
 ## Setup
 From a Raspberry Pi Zero W
@@ -8,9 +12,9 @@ Install [Raspbian Stretch Lite](https://www.raspberrypi.org/downloads/raspbian/)
 
 Install docker
 
-Install docker-Compose
+Install docker-compose
 
-Git clone this repo 
+Clone this repo 
 
 Run `"docker-compose build"`
 
@@ -24,7 +28,7 @@ There are three services that get created in the docker-compose file. StatusServ
 is responsible for getting the status of your Switchmate(s). It runs every few seconds and stores the status of all devices to a SQLite3 database. 
 
 
-GET /devices 
+GET `/devices`
 
 GET `/device/<macaddress>`
 
@@ -66,6 +70,8 @@ Coming soon.
 2 IOGear Bluetooth Adapters
 
 1 "Fast" MicroSD card
+
+[![IMG_0119.jpg](https://s17.postimg.org/z3an2uwvj/IMG_0119.jpg)](https://postimg.org/image/6dnr67svf/)
 
 
 ### Contributing
