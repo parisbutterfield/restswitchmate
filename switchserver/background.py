@@ -79,7 +79,7 @@ class BackgroundThread(object):
                     macaddress = self.convertMac(item['macaddress'])
                     auth_key  = unhexlify(item ['authkey'])
                     notifications = NotificationDelegate()
-                    device = Peripheral(macaddress, ADDR_TYPE_RANDOM)
+                    device = Peripheral(macaddress, ADDR_TYPE_RANDOM,int(os.environ['SCAN_HCI']))
                     device.setDelegate(notifications)
                     device.writeCharacteristic(STATE_NOTIFY_HANDLE, NOTIFY_VALUE, True)
                     device.writeCharacteristic(STATE_HANDLE, sign('\x01' + ('\x00', '\x01')[switch], auth_key))
