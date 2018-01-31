@@ -1,9 +1,9 @@
 # restswitchmate 
-Allows users to control Switchmate devices via REST. 
+This project allows users to control Switchmate devices via REST. 
 
 The supported device for this project is a Raspberry Pi Zero W. Three bluetooth radios are required for each service. The Pi Zero W has bluetooth built in and two USB Bluetooth adapters are added. 
 
-Docker containers run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. Containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running firmware 2.99.9 or lower. Hopefully additional firmwares will be added in the future.
+Docker is used to create containers, that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running firmware 2.99.9 or lower. Hopefully additional firmwares will be added in the future.
 
 ## Setup
 From a Raspberry Pi Zero W
@@ -14,15 +14,14 @@ Install docker
 
 Install docker-compose
 
-Clone this repo 
+Clone this repo `sudo apt-get install git && git clone https://github.com/parisbutterfield/restswitchmate.git`
 
 Run `"docker-compose build"`
 
 Run `"docker-compose start"`
 
 
-### Using
-There are three services that get created in the docker-compose file. StatusServer, AuthServer, and SwitchServer.
+Three services are created in the docker-compose file. StatusServer, AuthServer, and SwitchServer.
 
 #### StatusServer 
 is responsible for getting the status of your Switchmate(s). It runs every few seconds and stores the status of all devices to a SQLite3 database. 
@@ -36,7 +35,7 @@ PUT `/device/<macaddress>` via proxy (needed for Home-Assistant [RESTful Switch]
   
 GET `/device/<macaddress>/status`
   
-The server listens on port 5000. There is also a status page that can be reached at /status.
+StatusServer listens on port 5000. There is also a status page that can be reached at /status.
 
 
 #### AuthServer 
@@ -45,7 +44,7 @@ You can also start auth by visiting
 
 `/auth?macaddress=<macaddress>`
 
-The server listens on 5001. A URL is generated from the /status page from the Status Server.
+AuthServer listens on 5001. A URL is generated from the /status page from the Status Server.
 
 
 #### SwitchServer 
@@ -54,10 +53,12 @@ is responsible for handling requests to turn on and off devices. The PUT request
 PUT `/device/<macaddress>`
 
 Payload:
-`{on: false}`
+`{on: false}` or `{on: true}`
 
-The server listens on 5002.
+SwitchServer server listens on 5002.
 
+### Docker 
+View the [Readme](https://github.com/parisbutterfield/restswitchmate/tree/master/docker)
 
 ### Using with Home-Assistant
 Coming soon.
@@ -77,9 +78,9 @@ Coming soon.
 ### Contributing
 Pull requests are welcomed. :)
 
-My dev environment was an macOS machine running Ubuntu via VirtualBox.
+The development environment used for this project was a Mac running Ubuntu via VirtualBox.
 
-You need to install BluePy and any prerequites, 
+You need to install BluePy and any prerequites.
 
 To get the bluetooth adapter(s) running on macOS in VirtualBox you need run the following command in terminal.
 
