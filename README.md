@@ -14,14 +14,15 @@ Install docker
 
 Install docker-compose
 
-Clone this repo `sudo apt-get install git && git clone https://github.com/parisbutterfield/restswitchmate.git`
+Install git and clone this repo:
+`sudo apt-get install git && git clone https://github.com/parisbutterfield/restswitchmate.git`
 
 Run `"docker-compose build"`
 
 Run `"docker-compose start"`
 
 
-Three services are created in the docker-compose file. StatusServer, AuthServer, and SwitchServer.
+Three services are created in the docker-compose file. StatusServer, AuthServer, and SwitchServer. Each service has it's own bluetooth hardware attached to it. This prevents [problems](https://github.com/IanHarvey/bluepy/issues/57) with multiple connections on the same hardware.
 
 #### StatusServer 
 is responsible for getting the status of your Switchmate(s). It runs every few seconds and stores the status of all devices to a SQLite3 database. 
@@ -87,7 +88,8 @@ To get the bluetooth adapter(s) running on macOS in VirtualBox you need run the 
 `sudo nvram bluetoothHostControllerSwitchBehavior="never"`
 
 This will tell macOS not to use the adapter(s) and they'll be available to use in VirtualBox.
-Confirm this by running "hcitool dev"
+Confirm this by running `hcitool dev`.
+
 
 ### Thanks
 A portion of this code is from https://github.com/brianpeiris/switchmate. Many thanks for figuring out the interaction between the Switchmate.
