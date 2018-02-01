@@ -60,9 +60,8 @@ class FlaskAppWrapper(object):
 
     @app.route('/device/<macaddress>' , methods=['PUT'])
     def devicee(macaddress):
-        hostname = urlparse(request.host_url).hostname
         content = request.get_json(force=True)
-        r = requests.put("http://" + hostname + ":5002/device/" + macaddress, data = json.dumps(content) )
+        r = requests.put("http://" + "127.0.0.1" + ":5002/device/" + macaddress, data = json.dumps(content) )
         return r.content
 
 
