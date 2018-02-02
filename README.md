@@ -1,9 +1,9 @@
 # restswitchmate 
 This project allows users to control Switchmate devices via REST. 
 
-The supported device for this project is a Raspberry Pi Zero W. Three bluetooth radios are required for each service. The Pi Zero W has bluetooth built in and two USB Bluetooth adapters are added. 
+The supported device for this project is a Raspberry Pi Zero W. Three bluetooth radios are required for each service, described below. The Pi Zero W has bluetooth built in and two USB Bluetooth adapters are added. 
 
-Docker is used to create containers, that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running firmware 2.99.9 or lower. Hopefully additional firmwares will be added in the future.
+Docker is used to create containers that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running firmware 2.99.9 or lower. Hopefully additional firmwares will be added in the future.
 
 ## Setup
 From a Raspberry Pi Zero W
@@ -17,16 +17,15 @@ Install docker-compose
 Install git and clone this repo:
 `sudo apt-get install git && git clone https://github.com/parisbutterfield/restswitchmate.git`
 
-Run `"docker-compose build"`
+Run `docker-compose build`
 
-Run `"docker-compose start"`
+Run `docker-compose start`
 
 
 Three services are created in the docker-compose file. StatusServer, AuthServer, and SwitchServer. Each service has it's own bluetooth hardware attached to it. This prevents [problems](https://github.com/IanHarvey/bluepy/issues/57) with multiple connections on the same hardware.
 
 #### StatusServer 
 is responsible for getting the status of your Switchmate(s). It runs every few seconds and stores the status of all devices to a SQLite3 database. 
-
 
 GET `/devices`
 
@@ -42,10 +41,8 @@ StatusServer listens on port 5000. There is also a status page that can be reach
 
 
 #### AuthServer 
-is responsible for getting the authentication token from the device. A SocketIO Flask application will walk the user through getting the auth token. SocketIO is used because the auth process is async and REST wouldn't fit. If you have stored all auth keys, you can disable auth server. It does not need to run for status and switching.
-You can also start auth by visiting 
-
-`/auth?macaddress=<macaddress>`
+is responsible for getting the authentication token from the device. A SocketIO Flask application will walk the user through getting the auth token. SocketIO is used because the auth process is async and REST wouldn't fit. If you have stored all auth keys, you can disable auth server. It is not need to run for status and switching.
+You can start auth by visiting `/auth?macaddress=<macaddress>` or clicking "Authenticate" from the /status page of the StatusServer. Only one SocketIO client can be connected at a given time. Please close the window when authenticating multiple devices.
 
 <a href="https://s3.amazonaws.com/parisbutterfield.com/images/auth.png"> <img src="https://s3.amazonaws.com/parisbutterfield.com/images/auth.png" width="500"> </a>
 
@@ -66,8 +63,17 @@ SwitchServer server listens on 5002.
 View the [Readme](https://github.com/parisbutterfield/restswitchmate/tree/master/docker)
 
 ### Using with Home-Assistant
-Coming soon.
+Add the following to your configuration.yaml. This integeration is a [RESTful Switch](https://home-assistant.io/components/switch.rest/). Adding [emulated_hue](https://home-assistant.io/components/emulated_hue/) will allow control via Alexa and Google Home.
 
+```
+switch:
+  - platform: rest
+     resource: http://<deviceip>:5000/device/<macaddress>
+     method: 'put'
+     body_on: '{"on": true}'
+     body_off: '{"on": false}'
+     is_on_template: '{{value_json.status}}'
+``` 
 ### BOM (Bill of Materials)
 1 Raspberry Pi Zero W
 
