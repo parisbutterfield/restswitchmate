@@ -35,7 +35,9 @@ GET `/device/<macaddress>`
 PUT `/device/<macaddress>` via proxy (needed for Home-Assistant [RESTful Switch](https://home-assistant.io/components/switch.rest/) )
   
 GET `/device/<macaddress>/status`
-  
+
+<a href="https://s3.amazonaws.com/parisbutterfield.com/images/status.png"> <img src="https://s3.amazonaws.com/parisbutterfield.com/images/status.png" width="500"> </a>
+
 StatusServer listens on port 5000. There is also a status page that can be reached at /status.
 
 
@@ -44,6 +46,8 @@ is responsible for getting the authentication token from the device. A SocketIO 
 You can also start auth by visiting 
 
 `/auth?macaddress=<macaddress>`
+
+<a href="https://s3.amazonaws.com/parisbutterfield.com/images/auth.png"> <img src="https://s3.amazonaws.com/parisbutterfield.com/images/auth.png" width="500"> </a>
 
 AuthServer listens on 5001. A URL is generated from the /status page from the Status Server.
 
@@ -73,8 +77,7 @@ Coming soon.
 
 1 "Fast" MicroSD card
 
-[![IMG_0119.jpg](https://s17.postimg.org/z3an2uwvj/IMG_0119.jpg)](https://postimg.org/image/6dnr67svf/)
-
+<a href="https://s3.amazonaws.com/parisbutterfield.com/images/pi2.jpg"> <img src="https://s3.amazonaws.com/parisbutterfield.com/images/pi2.jpg"> </a>
 
 ### Contributing
 Pull requests are welcomed. :)
@@ -88,8 +91,9 @@ To get the bluetooth adapter(s) running on macOS in VirtualBox you need run the 
 `sudo nvram bluetoothHostControllerSwitchBehavior="never"`
 
 This will tell macOS not to use the adapter(s) and they'll be available to use in VirtualBox.
-Confirm this by running `hcitool dev`.
+Confirm this by running `hcitool dev`
 
+<a href="https://s3.amazonaws.com/parisbutterfield.com/images/ubuntu_vbox.png"> <img src="https://s3.amazonaws.com/parisbutterfield.com/images/ubuntu_vbox.png" width="500"> </a>
 
 ### Thanks
 A portion of this code is from https://github.com/brianpeiris/switchmate. Many thanks for figuring out the interaction between the Switchmate.
