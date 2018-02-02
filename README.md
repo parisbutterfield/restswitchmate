@@ -63,7 +63,7 @@ SwitchServer server listens on 5002.
 View the [Readme](https://github.com/parisbutterfield/restswitchmate/tree/master/docker)
 
 ### Using with Home-Assistant
-Add the following to your configuration.yaml. This integeration is a [RESTful Switch](https://home-assistant.io/components/switch.rest/). Adding [emulated_hue](https://home-assistant.io/components/emulated_hue/) will allow control via Alexa and Google Home.
+Add the following to your configuration.yaml. This integration is a [RESTful Switch](https://home-assistant.io/components/switch.rest/). Adding [emulated_hue](https://home-assistant.io/components/emulated_hue/) will allow control via Alexa and Google Home.
 
 ```
 switch:
@@ -90,7 +90,7 @@ Pull requests are welcomed. :)
 
 The development environment used for this project was a Mac running Ubuntu via VirtualBox.
 
-You need to install BluePy and any prerequites.
+You need to install BluePy and any prerequisites.
 
 To get the bluetooth adapter(s) running on macOS in VirtualBox you need run the following command in terminal.
 
