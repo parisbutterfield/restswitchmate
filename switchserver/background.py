@@ -86,6 +86,7 @@ class BackgroundThread(object):
                     device.writeCharacteristic(STATE_HANDLE, sign('\x01' + ('\x00', '\x01')[switch], auth_key))
                     while True:
                         if device.waitForNotifications(1.0):
+			    device.disconnect()
                             print('Ending session')
                             break
                         print('Waiting for notification')
