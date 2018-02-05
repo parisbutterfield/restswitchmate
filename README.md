@@ -3,7 +3,7 @@ This project allows users to control Switchmate devices via REST.
 
 The supported device for this project is a Raspberry Pi Zero W. Three bluetooth radios are required for each service, described below. The Pi Zero W has bluetooth built in and two USB Bluetooth adapters are added. 
 
-Docker is used to create containers that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running firmware 2.99.9 or lower. Hopefully additional firmwares will be added in the future.
+Docker is used to create containers that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running a firmware lower than 2.99.9. Hopefully additional firmwares will be added in the future.
 
 ## Setup
 From a Raspberry Pi Zero W
