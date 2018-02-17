@@ -45,7 +45,7 @@ class FlaskAppWrapper(object):
         return (rv[0] if rv else None) if one else rv
 
     @app.route('/device/relay/<macaddress>', methods=['PUT'])
-    def device(macaddress):
+    def devicerelay(macaddress):
         content = request.get_json(force=True)
         print(content)
         switchqueue.put(content);
