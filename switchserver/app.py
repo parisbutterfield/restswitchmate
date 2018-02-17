@@ -50,8 +50,7 @@ class FlaskAppWrapper(object):
         print(content)
         switchqueue.put(content);
         print("Adding relayed request to queue")
-        return ('', 200)
-    abort(404)
+    return ('', 200)
 
     @app.route('/device/<macaddress>', methods=['PUT'])
     def device(macaddress):
