@@ -64,8 +64,8 @@ class FlaskAppWrapper(object):
                 print("Relaying request...")
                 host = environ.get(macaddress)
                 r = requests.put("http://" + host + ":5002/device/relay/" + macaddress, data = json.dumps(results))
-            else
-                switchqueue.put(results);
+            else:
+                switchqueue.put(results)
                 print("Request added to queue")
         return ('', 200)
         abort(404)
