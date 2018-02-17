@@ -60,7 +60,7 @@ class FlaskAppWrapper(object):
         if results != None:
             content = request.get_json(force=True)
             results.update({'on' : content['on']})
-            if macaddress in os.environ
+            if macaddress in os.environ:
                 print("Relaying request...")
                 host = environ.get(macaddress)
                 r = requests.put("http://" + host + ":5002/device/relay/" + macaddress, data = json.dumps(results))
