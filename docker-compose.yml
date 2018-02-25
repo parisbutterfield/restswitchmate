@@ -8,6 +8,7 @@ services:
       - ./db:/db
       - /dev/bus/usb:/dev/bus/usb
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    restart: unless-stopped
     cap_add:
       - SYS_ADMIN
     network_mode: "host"
@@ -23,6 +24,7 @@ services:
       - ./db:/db
       - /dev/bus/usb:/dev/bus/usb
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    restart: unless-stopped
     cap_add:
       - SYS_ADMIN
     network_mode: "host"
@@ -38,6 +40,7 @@ services:
       - ./db:/db
       - /dev/bus/usb:/dev/bus/usb
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    restart: unless-stopped
     cap_add:
       - SYS_ADMIN
     network_mode: "host"

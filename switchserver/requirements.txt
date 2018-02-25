@@ -1,4 +1,1 @@
-flask
-netaddr
-bluepy
-flask-cors
+requests==2.18.4

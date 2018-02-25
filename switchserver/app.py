@@ -1,5 +1,7 @@
 import sqlite3 as lite
 import json
+import requests
+from os import environ
 from flask import Flask, g, request, abort
 from flask_cors import CORS
 from queue import switchqueue
@@ -42,6 +44,13 @@ class FlaskAppWrapper(object):
         cur.close()
         return (rv[0] if rv else None) if one else rv
 
+    @app.route('/device/relay/<macaddress>', methods=['PUT'])
+    def devicerelay(macaddress):
+        content = request.get_json(force=True)
+        print(content)
+        switchqueue.put(content);
+        print("Adding relayed request to queue")
+        return ('', 200)
 
     @app.route('/device/<macaddress>', methods=['PUT'])
     def device(macaddress):
@@ -50,7 +59,12 @@ class FlaskAppWrapper(object):
         if results != None:
             content = request.get_json(force=True)
             results.update({'on' : content['on']})
-            switchqueue.put(results);
-            print("Request added to queue")
-            return ('', 200)
+            if macaddress in environ:
+                print("Relaying request...")
+                host = environ.get(macaddress)
+                r = requests.put("http://" + host + ":5002/device/relay/" + macaddress, data = json.dumps(results))
+            else:
+                switchqueue.put(results)
+                print("Request added to queue")
+        return ('', 200)
         abort(404)
