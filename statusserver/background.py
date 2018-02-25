@@ -74,6 +74,7 @@ class BackgroundThread(object):
             scanner.process(5)
             scanner.stop()
             time.sleep(self.interval)
+	sys.exit() #If the loop exists because of an error, let the process go down and have docker restart it.
 
 class FlaskThread(object):
 
