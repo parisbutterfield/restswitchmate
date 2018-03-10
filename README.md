@@ -59,6 +59,42 @@ Payload:
 
 SwitchServer server listens on 5002.
 
+### Relay 
+Bluetooth range is only 10 meters. If you're having problems reliably switching, consider adding a relay.
+Setup another RaspberryPi Zero W. Use the install instructions listed above. But stop at `docker-compose build`. On the "main" Pi, modify docker-compose.yml. Add an environment variable:
+
+`<macaddress of the switchmate that should be relayed>=<hostname/ip address of relayed Pi> `
+  
+ Example:
+
+```
+  switchserver:
+    build: ./switchserver
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./db:/db
+      - /dev/bus/usb:/dev/bus/usb
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    network_mode: "host"
+    environment:
+      - SCAN_HCI=1
+      - 73B7E11EF9B0=10.0.1.53
+ ```
+ 
+ On the Raspberry Pi Zero W that is closer to the Switchmate run:
+ ```
+ cd restswitchmate 
+ docker-compose -f relay-compose.yml start
+ ```
+ 
+ When requests are sent to the main Pi, they will be relayed to the closer Pi Zero W.
+  
+
+
 ### Docker 
 View the [Readme](https://github.com/parisbutterfield/restswitchmate/tree/master/docker)
 
