@@ -20,6 +20,7 @@ NOTIFY_VALUE = struct.pack('<BB', 0x01, 0x00)
 
 STATE_HANDLE = 0x000e
 STATE_NOTIFY_HANDLE = 0x000f
+NEW_STATE_HANDLE = 0x30
 
 def c_mul(a, b):
 	'''
@@ -77,19 +78,26 @@ class BackgroundThread(object):
                 try:
                     item = switchqueue.get()
                     switch = item['on']
+                    if switch:
+                        val = '\x01'
+                    else:
+                        val = '\x00'
                     macaddress = self.convertMac(item['macaddress'])
-                    auth_key  = unhexlify(item ['authkey'])
-                    notifications = NotificationDelegate()
                     device = Peripheral(macaddress, ADDR_TYPE_RANDOM,int(os.environ['SCAN_HCI']))
-                    device.setDelegate(notifications)
-                    device.writeCharacteristic(STATE_NOTIFY_HANDLE, NOTIFY_VALUE, True)
-                    device.writeCharacteristic(STATE_HANDLE, sign('\x01' + ('\x00', '\x01')[switch], auth_key))
-                    while True:
-                        if device.waitForNotifications(1.0):
-			    device.disconnect()
-                            print('Ending session')
-                            break
-                        print('Waiting for notification')
+                    if item['newFirmware'] is False:
+                      notifications = NotificationDelegate()
+                      device.setDelegate(notifications)
+                      auth_key = unhexlify(item['authkey'])
+                      device.writeCharacteristic(STATE_NOTIFY_HANDLE, NOTIFY_VALUE, True)
+                      device.writeCharacteristic(STATE_HANDLE, sign('\x01' + val, auth_key))
+                      while True:
+                          if device.waitForNotifications(1.0):
+                              device.disconnect()
+                              print('Ending session')
+                              break
+                          print('Waiting for notification. Old Firmware.')
+                    else: # new firmware. No notifcation and no auth
+                        device.writeCharacteristic(NEW_STATE_HANDLE, val, True)
                     device.disconnect()
                 except Exception as e:
                     print(e)

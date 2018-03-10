@@ -1,7 +1,7 @@
 from __future__ import print_function
 import struct
 import os
-import ctypes
+import sys
 import threading
 import time
 import datetime
@@ -12,28 +12,65 @@ import netaddr
 from bluepy.btle import Scanner, DefaultDelegate, Peripheral, ADDR_TYPE_RANDOM
 from app import FlaskAppWrapper
 
-SWITCHMATE_SERVICE = '23d1bcea5f782315deef121223150000'
+# firmware < 2.99.15
+OLD_FIRMWARE_SERVICE = '23d1bcea5f782315deef121223150000'
+# firmware == 2.99.15 (or higher?)
+NEW_FIRMWARE_SERVICE = 'abd0f555eb40e7b2ac49ddeb83d32ba2'
+
+SWITCHMATE_SERVICES = [
+    OLD_FIRMWARE_SERVICE,
+    NEW_FIRMWARE_SERVICE,
+]
+
 NOTIFY_VALUE = struct.pack('<BB', 0x01, 0x00)
 
-AUTH_NOTIFY_HANDLE = 0x0017
-AUTH_HANDLE = 0x0016
-AUTH_INIT_VALUE = struct.pack('<BBBBBB', 0x00, 0x00, 0x00, 0x00, 0x01, 0x00)
+
 
 STATE_HANDLE = 0x000e
 STATE_NOTIFY_HANDLE = 0x000f
 
+NEW_STATE_HANDLE = 0x30
+
+SERVICES_AD_TYPE = 0x07
+
+def noop(x):
+    return x
+
+if sys.version_info >= (3,):
+    long = int
+    ord = noop
+
+def insertDBRecord(data):
+    print(data)
+    con = lite.connect('/db/switchmate.db')
+    sql = ''' INSERT OR REPLACE INTO Switchmate(macaddress, status, updated) 
+    				      VALUES (?, ?, ?) '''
+
+    cur = con.cursor()
+    cur.execute(sql, data)
+    con.commit()
+
+def convertMac(macaddress):
+    mac = EUI(macaddress)
+    mac.dialect = netaddr.mac_bare
+    return str(mac)
+
+def readnewFirmware(macaddress):
+    try:
+        peripheral = Peripheral(macaddress, ADDR_TYPE_RANDOM)
+        val = ord(peripheral.readCharacteristic(NEW_STATE_HANDLE))
+        data = (convertMac(macaddress), (False, True)[val], datetime.datetime.now())
+        insertDBRecord(data)
+        peripheral.disconnect()
+    except Exception as ex:
+        print('WARNING: Could not read status of {}. {}'.format(macaddress, ex.message))
+
 
 class ScanDelegate(DefaultDelegate):
-    def __init__(self):
+    def __init__(self, set):
         DefaultDelegate.__init__(self)
         self.seen = []
-        self.con = lite.connect('/db/switchmate.db')
-
-    @staticmethod
-    def convertMac(macaddress):
-        mac = EUI(macaddress)
-        mac.dialect = netaddr.mac_bare
-        return str(mac)
+        self.set = set
 
     def handleDiscovery(self, dev, isNewDev, isNewData):
 
@@ -41,18 +78,20 @@ class ScanDelegate(DefaultDelegate):
             return
         self.seen.append(dev.addr)
 
-        AD_TYPE_UUID = 0x07
         AD_TYPE_SERVICE_DATA = 0x16
-        if dev.getValueText(AD_TYPE_UUID) == SWITCHMATE_SERVICE:
+        NEW_DATA = 30
+        service = dev.getValueText(SERVICES_AD_TYPE)
+        val = None
+        if service == OLD_FIRMWARE_SERVICE:
             data = dev.getValueText(AD_TYPE_SERVICE_DATA)
             # the bit at 0x0100 signifies if the switch is off or on
-            sql = ''' INSERT OR REPLACE INTO Switchmate(macaddress, status, updated) 
-				      VALUES (?, ?, ?) '''
-            data = (self.convertMac(dev.addr), (False, True)[(int(data, 16) >> 8) & 1], datetime.datetime.now())
-            print('inserting data: ', data)
-            cur = self.con.cursor()
-            cur.execute(sql, data)
-            self.con.commit()
+            val = (int(data, 16) >> 8) & 1
+        elif service == NEW_FIRMWARE_SERVICE:
+            self.set.add(dev.addr)
+
+        if val is not None:
+            data = (convertMac(dev.addr), (False, True)[val], datetime.datetime.now())
+            insertDBRecord(data)
 
 
 class BackgroundThread(object):
@@ -68,11 +107,14 @@ class BackgroundThread(object):
         while True:
             # Do something
             print('Starting Scan Process')
-            scanner = Scanner(int(os.environ['SCAN_HCI'])).withDelegate(ScanDelegate())
+            items = set()
+            scanner = Scanner(int(os.environ['SCAN_HCI'])).withDelegate(ScanDelegate(items))
             scanner.clear()
             scanner.start()
             scanner.process(5)
             scanner.stop()
+            for item in items:
+                readnewFirmware(item)
             time.sleep(self.interval)
 	sys.exit() #If the loop exists because of an error, let the process go down and have docker restart it.
 

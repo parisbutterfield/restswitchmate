@@ -52,7 +52,13 @@ AuthServer listens on 5001. A URL is generated from the /status page from the St
 #### SwitchServer 
 is responsible for handling requests to turn on and off devices. The PUT request takes a JSON payload. 
 
+For firmware 2.99 and lower: 
+
 PUT `/device/<macaddress>`
+
+For firmware 2.9.15 and higher: 
+
+PUT `/device/<macaddress>?newFirmware=true `
 
 Payload:
 `{on: false}` or `{on: true}`
