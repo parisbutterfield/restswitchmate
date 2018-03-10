@@ -12,6 +12,6 @@ services:
       - SYS_ADMIN
     network_mode: "host"
     environment:
-      - SCAN_HCI=2
+      - SCAN_HCI=0
       - PYTHONUNBUFFERED=1
     privileged: true
