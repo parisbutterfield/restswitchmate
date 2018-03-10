@@ -6,7 +6,7 @@ The supported device for this project is a Raspberry Pi Zero W. Three bluetooth 
 Docker is used to create containers that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts.
 
 ## Setup
-From a Raspberry Pi Zero W
+From a Raspberry Pi
 ---------------------------------------------
 Install [Raspbian Stretch Lite](https://www.raspberrypi.org/downloads/raspbian/)
 
@@ -30,7 +30,6 @@ docker-compose build
 docker-compose start
 ```
 
-
 Three services are created in the docker-compose file. StatusServer, AuthServer, and SwitchServer. Each service has it's own bluetooth hardware attached to it. This prevents [problems](https://github.com/IanHarvey/bluepy/issues/57) with multiple connections on the same hardware.
 
 #### StatusServer 
@@ -40,7 +39,7 @@ GET `/devices`
 
 GET `/device/<macaddress>`
 
-PUT `/device/<macaddress>` via proxy (needed for Home-Assistant [RESTful Switch](https://home-assistant.io/components/switch.rest/) When using new firmwares, the syntax in listed in SwitchServer is supported. )
+PUT `/device/<macaddress>` via proxy (needed for Home-Assistant [RESTful Switch](https://home-assistant.io/components/switch.rest/) When using new firmwares, the syntax in listed in SwitchServer is supported.)
   
 GET `/device/<macaddress>/status`
 
