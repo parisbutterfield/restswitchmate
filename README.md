@@ -3,24 +3,32 @@ This project allows users to control Switchmate devices via REST.
 
 The supported device for this project is a Raspberry Pi Zero W. Three bluetooth radios are required for each service, described below. The Pi Zero W has bluetooth built in and two USB Bluetooth adapters are added. 
 
-Docker is used to create containers that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts. The Switchmate device must be running a firmware lower than 2.99.9. Hopefully additional firmwares will be added in the future.
+Docker is used to create containers that run [Flask](http://flask.pocoo.org) applications for switching, status, and authentication. The containers are multi architecture, supporting ARM and AMD64 hosts.
 
 ## Setup
-From a Raspberry Pi Zero W
+From a Raspberry Pi
 ---------------------------------------------
 Install [Raspbian Stretch Lite](https://www.raspberrypi.org/downloads/raspbian/)
 
-Install docker
+Run the following commands:
 
-Install docker-compose
+```
+curl -sSL https://get.docker.com | sh
 
-Install git and clone this repo:
-`sudo apt-get install git && git clone https://github.com/parisbutterfield/restswitchmate.git`
+sudo apt-get install python-pip
 
-Run `docker-compose build`
+sudo apt-get install git
 
-Run `docker-compose start`
+sudo pip install docker-compose
 
+git clone https://github.com/parisbutterfield/restswitchmate.git
+
+cd restswitchmate
+
+docker-compose build
+
+docker-compose start
+```
 
 Three services are created in the docker-compose file. StatusServer, AuthServer, and SwitchServer. Each service has it's own bluetooth hardware attached to it. This prevents [problems](https://github.com/IanHarvey/bluepy/issues/57) with multiple connections on the same hardware.
 
@@ -31,7 +39,7 @@ GET `/devices`
 
 GET `/device/<macaddress>`
 
-PUT `/device/<macaddress>` via proxy (needed for Home-Assistant [RESTful Switch](https://home-assistant.io/components/switch.rest/) )
+PUT `/device/<macaddress>` via proxy (needed for Home-Assistant [RESTful Switch](https://home-assistant.io/components/switch.rest/) When using new firmwares, the syntax in listed in SwitchServer is supported.)
   
 GET `/device/<macaddress>/status`
 
@@ -52,7 +60,13 @@ AuthServer listens on 5001. A URL is generated from the /status page from the St
 #### SwitchServer 
 is responsible for handling requests to turn on and off devices. The PUT request takes a JSON payload. 
 
+For firmware 2.99 and lower: 
+
 PUT `/device/<macaddress>`
+
+For firmware 2.9.15 and higher: 
+
+PUT `/device/<macaddress>?newFirmware=true `
 
 Payload:
 `{on: false}` or `{on: true}`

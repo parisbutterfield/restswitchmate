@@ -47,15 +47,22 @@ class FlaskAppWrapper(object):
     @app.route('/device/relay/<macaddress>', methods=['PUT'])
     def devicerelay(macaddress):
         content = request.get_json(force=True)
-        print(content)
         switchqueue.put(content);
         print("Adding relayed request to queue")
         return ('', 200)
 
     @app.route('/device/<macaddress>', methods=['PUT'])
     def device(macaddress):
-        results = FlaskAppWrapper.query_db('select * from Switchmate INNER JOIN Auth ON Auth.macaddress = Switchmate.macaddress where Switchmate.macaddress = ?', (macaddress.upper(),),
+        results = None
+        newFirmware = request.args.get('newFirmware')
+        if newFirmware is None or newFirmware.lower() == 'false':
+            results = FlaskAppWrapper.query_db('select * from Switchmate INNER JOIN Auth ON Auth.macaddress = Switchmate.macaddress where Switchmate.macaddress = ?', (macaddress.upper(),),
                                            one=True)
+            results.update({'newFirmware': False})
+        elif newFirmware is not None and newFirmware.lower() == 'true':
+            results = {}
+            results['macaddress'] = macaddress
+            results['newFirmware'] = True
         if results != None:
             content = request.get_json(force=True)
             results.update({'on' : content['on']})
@@ -63,8 +70,10 @@ class FlaskAppWrapper(object):
                 print("Relaying request...")
                 host = environ.get(macaddress)
                 r = requests.put("http://" + host + ":5002/device/relay/" + macaddress, data = json.dumps(results))
+                print("Request relayed to " + "http://" + host + ":5002/device/relay/" + macaddress)
+
             else:
                 switchqueue.put(results)
-                print("Request added to queue")
-        return ('', 200)
+                print("Request added to queue locally")
+            return ('', 200)
         abort(404)
