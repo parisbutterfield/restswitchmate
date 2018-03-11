@@ -62,7 +62,7 @@ class FlaskAppWrapper(object):
     def devicee(macaddress):
         content = request.get_json(force=True)
         newFirmware = request.args.get('newFirmware')
-        firmwareParam =  (" ", ?newFirmware=" + newFirmware)[newFirmware is not None]
+        firmwareParam =  (" ", "?newFirmware=" + newFirmware)[newFirmware is not None]
         r = requests.put("http://" + "127.0.0.1" + ":5002/device/" + macaddress + firmwareParam, data = json.dumps(content) )
         return r.content
 
