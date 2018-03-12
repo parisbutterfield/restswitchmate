@@ -96,9 +96,9 @@ class ScanDelegate(DefaultDelegate):
 
 class BackgroundThread(object):
 
-    def __init__(self, interval=2):
+    def __init__(self):
 
-        self.interval = interval
+        self.interval = int(os.environ['SCAN_INTERVAL'])
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = False
         thread.start()  # Start the execution
