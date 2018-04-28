@@ -10,7 +10,6 @@ from netaddr import EUI
 import netaddr
 
 from bluepy.btle import Scanner, DefaultDelegate, Peripheral, ADDR_TYPE_RANDOM
-from app import FlaskAppWrapper
 
 # firmware < 2.99.15
 OLD_FIRMWARE_SERVICE = '23d1bcea5f782315deef121223150000'
@@ -33,6 +32,8 @@ NEW_STATE_HANDLE = 0x30
 
 SERVICES_AD_TYPE = 0x07
 
+DATABASE = ''/db/switchmate.db'
+
 def noop(x):
     return x
 
@@ -42,8 +43,8 @@ if sys.version_info >= (3,):
 
 def insertDBRecord(data):
     print(data)
-    con = lite.connect('/db/switchmate.db')
-    sql = ''' INSERT OR REPLACE INTO Switchmate(macaddress, status, updated) 
+    con = lite.connect(DATABASE)
+    sql = ''' INSERT OR REPLACE INTO Switchmate(macaddress, status, updated)
     				      VALUES (?, ?, ?) '''
 
     cur = con.cursor()
@@ -118,28 +119,14 @@ class BackgroundThread(object):
             time.sleep(self.interval)
 	sys.exit() #If the loop exists because of an error, let the process go down and have docker restart it.
 
-class FlaskThread(object):
-
-    def __init__(self):
-
-        thread = threading.Thread(target=self.run, args=())
-        thread.daemon = False
-        thread.start()  # Start the execution
-
-    def run(self):
-        app = FlaskAppWrapper()
-        app.run()
-        print('Staring Scan REST API')
-
 def myfunc(col):
     val = int(col) == 1
     return val
 
 
-con = lite.connect('/db/switchmate.db', detect_types=lite.PARSE_DECLTYPES)
+con = lite.connect(DATABASE, detect_types=lite.PARSE_DECLTYPES)
 lite.register_converter('boolean', myfunc)
 cur = con.cursor()
 cur.execute("CREATE TABLE IF NOT EXISTS Switchmate (macaddress TEXT PRIMARY KEY, status boolean, updated INT)")
 BackgroundThread()
-FlaskThread()
 print('Switchmate Scan Running')

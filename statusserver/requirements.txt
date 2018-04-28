@@ -1,4 +1,2 @@
-flask
-netaddr
-bluepy
-flask-cors
+requests==2.18.4
+uwsgi==2.0.17
