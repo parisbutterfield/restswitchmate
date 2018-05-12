@@ -1,7 +1,8 @@
-FROM parisbutterfield/restswitch:switchserver
+FROM parisbutterfield/restswitch:switchserver2
 RUN mkdir /db
 ADD . /code
+ADD supervisord.conf /etc/supervisord.conf
 WORKDIR /code
-RUN pip install -r requirements.txt
-RUN chmod +x run.sh
-CMD ["/code/run.sh"]
+RUN chmod +x -R *.sh
+RUN chmod +x -R *.py
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]

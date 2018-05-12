@@ -2,12 +2,12 @@ version: '3'
 services:
   statusserver:
     build: ./statusserver
-    image: parisbutterfield/restswitch:statusserveramd64
+    image: parisbutterfield/restswitch:statusserver2amd64
 
   authserver:
     build: ./authserver
-    image: parisbutterfield/restswitch:authserveramd64
+    image: parisbutterfield/restswitch:authserver2amd64
 
   switchserver:
     build: ./switchserver
-    image: parisbutterfield/restswitch:switchserveramd64
+    image: parisbutterfield/restswitch:switchserver2amd64

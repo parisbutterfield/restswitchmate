@@ -1,79 +1,66 @@
 import sqlite3 as lite
-import json
-import requests
 from os import environ
 from flask import Flask, g, request, abort
-from flask_cors import CORS
-from queue import switchqueue
+import manager
 
-class FlaskAppWrapper(object):
-    DATABASE = '/db/switchmate.db'
+DATABASE = '/db/switchmate.db'
+LOCAL = "127.0.0.1"
 
-    app = Flask(__name__)
-    CORS(app)
 
-    def __init__(self):
-        app = Flask(__name__)
+app = Flask(__name__)
 
-    def run(self):
-        self.app.run(host="0.0.0.0", port=5002)
+def getSharedLocation():
+    mainpienv = "MAIN_PISWITCH"
+    if mainpienv in environ:
+        return environ.get(mainpienv)
+    else:
+        return LOCAL
 
-    @staticmethod
-    def make_dicts(cursor, row):
-        return dict((cursor.description[idx][0], value)
-                    for idx, value in enumerate(row))
+sharedAuth = manager.getShared(getSharedLocation()).syncdict()
+jobQueue = manager.getShared(LOCAL).get_job_q()
 
-    @staticmethod
-    def myfunc(col):
-        val = int(col) == 1
-        return val
+def make_dicts(cursor, row):
+    return dict((cursor.description[idx][0], value)
+                for idx, value in enumerate(row))
 
-    @staticmethod
-    def get_db():
-        db = getattr(g, '_database', None)
-        if db is None:
-            db = g._database = lite.connect(FlaskAppWrapper.DATABASE, detect_types=lite.PARSE_DECLTYPES)
-            lite.register_converter('boolean', FlaskAppWrapper.myfunc)
-            db.row_factory = FlaskAppWrapper.make_dicts
-        return db
+def myfunc(col):
+    val = int(col) == 1
+    return val
 
-    @staticmethod
-    def query_db(query, args=(), one=False):
-        cur = FlaskAppWrapper.get_db().execute(query, args)
-        rv = cur.fetchall()
-        cur.close()
-        return (rv[0] if rv else None) if one else rv
+def get_db():
+    db = lite.connect(DATABASE, detect_types=lite.PARSE_DECLTYPES)
+    lite.register_converter('boolean', myfunc)
+    db.row_factory = make_dicts
+    return db
 
-    @app.route('/device/relay/<macaddress>', methods=['PUT'])
-    def devicerelay(macaddress):
-        content = request.get_json(force=True)
-        switchqueue.put(content);
-        print("Adding relayed request to queue")
-        return ('', 200)
+def query_db(query, args=(), one=False):
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
 
-    @app.route('/device/<macaddress>', methods=['PUT'])
-    def device(macaddress):
-        results = None
-        newFirmware = request.args.get('newFirmware')
-        if newFirmware is None or newFirmware.lower() == 'false':
-            results = FlaskAppWrapper.query_db('select * from Switchmate INNER JOIN Auth ON Auth.macaddress = Switchmate.macaddress where Switchmate.macaddress = ?', (macaddress.upper(),),
-                                           one=True)
+
+@app.route('/device/<macaddress>', methods=['PUT'])
+def device(macaddress):
+    results = None
+    newFirmware = request.args.get('newFirmware')
+    if newFirmware is None or newFirmware.lower() == 'false':
+        try:
+            results = sharedAuth.get(macaddress.upper())
             results.update({'newFirmware': False})
-        elif newFirmware is not None and newFirmware.lower() == 'true':
-            results = {}
-            results['macaddress'] = macaddress
-            results['newFirmware'] = True
-        if results != None:
-            content = request.get_json(force=True)
-            results.update({'on' : content['on']})
-            if macaddress in environ:
-                print("Relaying request...")
-                host = environ.get(macaddress)
-                r = requests.put("http://" + host + ":5002/device/relay/" + macaddress, data = json.dumps(results))
-                print("Request relayed to " + "http://" + host + ":5002/device/relay/" + macaddress)
-
-            else:
-                switchqueue.put(results)
-                print("Request added to queue locally")
-            return ('', 200)
-        abort(404)
+        except:
+            abort(404)
+    elif newFirmware is not None and newFirmware.lower() == 'true':
+        results = {}
+        results['macaddress'] = macaddress
+        results['newFirmware'] = True
+    if results != None:
+        content = request.get_json(force=True)
+        results.update({'on' : content['on']})
+        try:
+            jobQueue.put(results)
+        except:
+            abort(404)
+        print("Request added to queue")
+        return ('', 200)
+    abort(404)

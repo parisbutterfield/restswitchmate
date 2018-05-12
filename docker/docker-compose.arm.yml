@@ -2,12 +2,12 @@ version: '3'
 services:
   statusserver:
     build: ./statusserver
-    image: parisbutterfield/restswitch:statusserverarm
+    image: parisbutterfield/restswitch:statusserver2arm
 
   authserver:
     build: ./authserver
-    image: parisbutterfield/restswitch:authserverarm
+    image: parisbutterfield/restswitch:authserver2arm
 
   switchserver:
     build: ./switchserver
-    image: parisbutterfield/restswitch:switchserverarm
+    image: parisbutterfield/restswitch:switchserver2arm

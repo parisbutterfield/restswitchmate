@@ -32,7 +32,7 @@ NEW_STATE_HANDLE = 0x30
 
 SERVICES_AD_TYPE = 0x07
 
-DATABASE = ''/db/switchmate.db'
+DATABASE = '/db/switchmate.db'
 
 def noop(x):
     return x
@@ -109,7 +109,7 @@ class BackgroundThread(object):
             # Do something
             print('Starting Scan Process')
             items = set()
-            scanner = Scanner(int(os.environ['SCAN_HCI'])).withDelegate(ScanDelegate(items))
+            scanner = Scanner().withDelegate(ScanDelegate(items))
             scanner.clear()
             scanner.start()
             scanner.process(5)

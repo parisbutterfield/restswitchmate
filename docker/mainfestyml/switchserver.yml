@@ -1,12 +1,12 @@
-image: parisbutterfield/restswitch:switchserver
+image: parisbutterfield/restswitch:switchserver2
 manifests:
   -
-    image: parisbutterfield/restswitch:switchserverarm
+    image: parisbutterfield/restswitch:switchserver2arm
     platform:
       architecture: arm
       os: linux
   -
-    image: parisbutterfield/restswitch:switchserveramd64
+    image: parisbutterfield/restswitch:switchserver2amd64
     platform:
       architecture: amd64
       os: linux

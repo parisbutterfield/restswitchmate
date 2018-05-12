@@ -7,12 +7,12 @@ services:
       - "80:80"
     volumes:
       - ./db:/db
-      # - /dev/bus/usb:/dev/bus/usb
-      # - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /dev/bus/usb:/dev/bus/usb
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     restart: unless-stopped
     cap_add:
       - SYS_ADMIN
-    network_mode: "bridge"
+    network_mode: "host"
     environment:
       - SCAN_HCI=0
       - SCAN_INTERVAL=30

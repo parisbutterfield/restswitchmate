@@ -49,14 +49,6 @@ def device(macaddress):
         return json.dumps(results)
     abort(404)
 
-# @app.route('/device/<macaddress>' , methods=['PUT'])
-# def devicee(macaddress):
-#     content = request.get_json(force=True)
-#     firmwareParam =  "?newFirmware=" + request.args.get('newFirmware') if 'newFirmware' in request.args else ""
-#     r = requests.put("http://" + "127.0.0.1" + ":5002/device/" + macaddress + firmwareParam, data = json.dumps(content) )
-#     return r.content
-
-
 @app.route('/device/<macaddress>/status')
 def devicestatus(macaddress):
     results = query_db('select status from Switchmate where macaddress = ?', (macaddress.upper(),),

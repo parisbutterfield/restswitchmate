@@ -5,15 +5,12 @@ import struct
 import ctypes
 import time
 import threading
+import manager
 
 from netaddr import EUI
 import netaddr
-from queue import switchqueue
-
 from bluepy.btle import Scanner, DefaultDelegate, Peripheral, ADDR_TYPE_RANDOM
 from binascii import unhexlify
-
-from app import FlaskAppWrapper
 
 SWITCHMATE_SERVICE = '23d1bcea5f782315deef121223150000'
 NOTIFY_VALUE = struct.pack('<BB', 0x01, 0x00)
@@ -21,6 +18,7 @@ NOTIFY_VALUE = struct.pack('<BB', 0x01, 0x00)
 STATE_HANDLE = 0x000e
 STATE_NOTIFY_HANDLE = 0x000f
 NEW_STATE_HANDLE = 0x30
+LOCAL = "127.0.0.1"
 
 def c_mul(a, b):
 	'''
@@ -73,6 +71,7 @@ class BackgroundThread(object):
         thread.start()  # Start the execution
 
     def run(self):
+        switchqueue = manager.getShared(LOCAL).get_job_q()
         while True:
             if not switchqueue.empty():
                 try:
@@ -103,23 +102,10 @@ class BackgroundThread(object):
                     print(e)
             time.sleep(1);
 
-class FlaskThread(object):
-
-    def __init__(self):
-
-        thread = threading.Thread(target=self.run, args=())
-        thread.daemon = False
-        thread.start()  # Start the execution
-
-    def run(self):
-        app = FlaskAppWrapper()
-        app.run()
-
 def myfunc(col):
     val = int(col) == 1
     return val
 
 
 BackgroundThread()
-FlaskThread()
 print('Switchmate SwitchServer Running')
