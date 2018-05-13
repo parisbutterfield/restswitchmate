@@ -1,12 +1,12 @@
-image: parisbutterfield/restswitch:authserver
+image: parisbutterfield/restswitch:authserver2
 manifests:
   -
-    image: parisbutterfield/restswitch:authserverarm
+    image: parisbutterfield/restswitch:authserver2arm
     platform:
       architecture: arm
       os: linux
   -
-    image: parisbutterfield/restswitch:authserveramd64
+    image: parisbutterfield/restswitch:authserver2amd64
     platform:
       architecture: amd64
       os: linux
