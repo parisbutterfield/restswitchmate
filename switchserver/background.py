@@ -6,7 +6,7 @@ import ctypes
 import time
 import threading
 import manager
-
+import backoff
 from netaddr import EUI
 import netaddr
 from bluepy.btle import Scanner, DefaultDelegate, Peripheral, ADDR_TYPE_RANDOM
@@ -69,6 +69,41 @@ class BackgroundThread(object):
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = False
         thread.start()  # Start the execution
+    
+    def backoff_hdlr(details):
+        print ("Backing off {wait:0.1f} seconds afters {tries} tries "
+            "calling function {target} with args {args} and kwargs "
+            "{kwargs}".format(**details))
+
+    @backoff.on_exception(backoff.expo,
+                      Exception,
+                      max_tries=3,
+                      jitter=None,
+                      on_backoff=backoff_hdlr)
+    def switch(self, item):
+        switch = item['on']
+        if switch:
+            val = '\x01'
+        else:
+            val = '\x00'
+        macaddress = self.convertMac(item['macaddress'])
+        device = Peripheral(macaddress, ADDR_TYPE_RANDOM,int(os.environ['SCAN_HCI']))
+        if item['newFirmware'] is False:
+            notifications = NotificationDelegate()
+            device.setDelegate(notifications)
+            auth_key = unhexlify(item['authkey'])
+            device.writeCharacteristic(STATE_NOTIFY_HANDLE, NOTIFY_VALUE, True)
+            device.writeCharacteristic(STATE_HANDLE, sign('\x01' + val, auth_key))
+            while True:
+                if device.waitForNotifications(1.0):
+                    device.disconnect()
+                    print('Ending session')
+                    break
+                print('Waiting for notification. Old Firmware.')
+        else: # new firmware. No notifcation and no auth
+            device.writeCharacteristic(NEW_STATE_HANDLE, val, True)
+        device.disconnect()
+
 
     def run(self):
         switchqueue = manager.getShared(LOCAL).get_job_q()
@@ -76,28 +111,7 @@ class BackgroundThread(object):
             if not switchqueue.empty():
                 try:
                     item = switchqueue.get()
-                    switch = item['on']
-                    if switch:
-                        val = '\x01'
-                    else:
-                        val = '\x00'
-                    macaddress = self.convertMac(item['macaddress'])
-                    device = Peripheral(macaddress, ADDR_TYPE_RANDOM,int(os.environ['SCAN_HCI']))
-                    if item['newFirmware'] is False:
-                      notifications = NotificationDelegate()
-                      device.setDelegate(notifications)
-                      auth_key = unhexlify(item['authkey'])
-                      device.writeCharacteristic(STATE_NOTIFY_HANDLE, NOTIFY_VALUE, True)
-                      device.writeCharacteristic(STATE_HANDLE, sign('\x01' + val, auth_key))
-                      while True:
-                          if device.waitForNotifications(1.0):
-                              device.disconnect()
-                              print('Ending session')
-                              break
-                          print('Waiting for notification. Old Firmware.')
-                    else: # new firmware. No notifcation and no auth
-                        device.writeCharacteristic(NEW_STATE_HANDLE, val, True)
-                    device.disconnect()
+                    self.switch(item)
                 except Exception as e:
                     print(e)
             time.sleep(1);
